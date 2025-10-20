@@ -1,5 +1,6 @@
 module galeria_micro_poemas::galeria_micro_poemas {
     use sui::coin::{Self, Coin};
+    use sui::balance::{Self as balance, Balance};
     use sui::sui::SUI;
     use sui::event;
 
@@ -16,12 +17,12 @@ module galeria_micro_poemas::galeria_micro_poemas {
         likes: u64,
         timestamp: u64,
     }
-
     public struct Galeria has key {
         id: UID,
-        fondos: Coin<SUI>,
+        fondos: Balance<SUI>,
         total_poemas: u64,
     }
+    
 
     public struct PoemaPublicado has copy, drop {
         poema_id: ID,
@@ -32,16 +33,17 @@ module galeria_micro_poemas::galeria_micro_poemas {
         poema_id: ID,
         nuevo_total: u64,
     }
-
     fun init(ctx: &mut TxContext) {
         let galeria = Galeria {
             id: object::new(ctx),
-            fondos: coin::zero(ctx),
+            fondos: balance::zero<SUI>(),
             total_poemas: 0,
         };
         transfer::share_object(galeria);
     }
+    
 
+    #[allow(lint(self_transfer))]
     public fun publicar_poema(
         galeria: &mut Galeria,
         pago: Coin<SUI>,
@@ -50,7 +52,8 @@ module galeria_micro_poemas::galeria_micro_poemas {
     ) {
         assert!(contenido.length() <= MAX_CARACTERES, ETextoMuyLargo);
         assert!(pago.value() >= PRECIO_PUBLICACION, EPagoInsuficiente);
-        coin::put(&mut galeria.fondos, pago);
+        let pago_balance = coin::into_balance(pago);
+        balance::join(&mut galeria.fondos, pago_balance);
         galeria.total_poemas = galeria.total_poemas + 1;
         let poema = MicroPoema {
             id: object::new(ctx),
@@ -67,8 +70,11 @@ module galeria_micro_poemas::galeria_micro_poemas {
     public fun dar_like(poema: &mut MicroPoema) {
         poema.likes = poema.likes + 1;
         event::emit(LikeDado { poema_id: object::id(poema), nuevo_total: poema.likes });
+    
     }
 
+
+    #[allow(lint(share_owned))]
     public fun compartir_poema(poema: MicroPoema) {
         transfer::public_share_object(poema);
     }
