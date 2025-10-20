@@ -1,6 +1,6 @@
-# Galería de Micro Poemas (Sui Move)
+# Galería de Micro Poemas (Sui)
 
-Contrato Move para una galería on-chain de micro poemas. Los usuarios pagan una tarifa para publicar un micro poema (hasta 280 bytes), reciben el objeto del poema como propietario, otros pueden dar like y el contrato acumula los fondos en una galería compartida.
+Es un contrato para una galería on-chain de micro poemas. Los usuarios pagan una tarifa para publicar un micro poema (hasta 280 bytes), reciben el objeto del poema como propietario, otros pueden dar like y el contrato acumula los fondos en una galería compartida.
 
 ## Módulo
 
@@ -9,10 +9,8 @@ Contrato Move para una galería on-chain de micro poemas. Los usuarios pagan una
 
 ## Concepto
 
-- Cada micro poema es un objeto con autor, contenido, contador de likes y marca de tiempo.
-- Publicar cuesta `PRECIO_PUBLICACION = 100_000_000` MIST (0.1 SUI), límite de `MAX_CARACTERES = 280` bytes.
-- Al publicar se emite un evento y la galería acumula los fondos.
-- Cualquiera puede dar like a un poema; solo el autor puede eliminarlo.
+ Cada micro poema es un objeto con autor, contenido, contador de likes y marca de tiempo. es posible  Publicar cuesta `PRECIO_PUBLICACION = 100_000_000` MIST (0.1 SUI), límite de `MAX_CARACTERES = 280` bytes.
+ Al publicar se emite un evento y la galería acumula los fondos, Cualquiera puede dar like a un poema; solo el autor puede eliminarlo.
 
 ## Estructuras y eventos
 
@@ -34,7 +32,7 @@ Contrato Move para una galería on-chain de micro poemas. Los usuarios pagan una
 
 Códigos de error: `1` (texto muy largo), `2` (pago insuficiente), `3` (no es autor).
 
-## Uso rápido con Sui CLI
+## Uso
 
 Requisitos: tener `sui` instalado y una cuenta configurada.
 
@@ -64,8 +62,7 @@ sui client call \
   --package <PACKAGE_ID> \
   --module galeria_micro_poemas \
   --function publicar_poema \
-  --args <GALERIA_OBJECT_ID> <COIN_ID> 0x486f6c61 \
-  --gas-budget 100000000
+  --args <GALERIA_OBJECT_ID> <COIN_ID> 0x486f6c61...
 ```
 
 4) Dar like a un poema
@@ -76,8 +73,7 @@ sui client call \
   --package <PACKAGE_ID> \
   --module galeria_micro_poemas \
   --function dar_like \
-  --args <POEMA_OBJECT_ID> \
-  --gas-budget 50000000
+  --args <POEMA_OBJECT_ID> 
 ```
 
 5) Eliminar un poema (solo autor)
@@ -87,8 +83,7 @@ sui client call \
   --package <PACKAGE_ID> \
   --module galeria_micro_poemas \
   --function eliminar_poema \
-  --args <POEMA_OBJECT_ID> \
-  --gas-budget 50000000
+  --args <POEMA_OBJECT_ID>
 ```
 
 6) Consultas
